@@ -165,6 +165,22 @@
   .child-card dd { margin: 0; white-space: pre-wrap; }
   .badge.dual-yes { background: var(--good-bg); color: var(--good); }
   .badge.dual-no { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-border); }
+  /* The filter panel is taller than most screens: it scrolls on its own on wide
+     screens and is an ordinary block on narrow ones, so results stay reachable. */
+  .filters { max-height: calc(100vh - 32px); overflow-y: auto; }
+  .jump { display: none; width: 100%; margin: 0 0 10px; padding: 9px; border-radius: 6px; border: 1px solid var(--accent);
+    background: var(--accent-bg); color: var(--accent); font-weight: 700; font-size: 13.5px; cursor: pointer; }
+  @media (max-width: 900px) {
+    .layout, .theory-layout { grid-template-columns: minmax(0, 1fr); padding: 12px 12px 32px; }
+    .main-col { min-width: 0; }
+    .filters, .theory-index { position: static; max-height: none; overflow: visible; }
+    .jump { display: block; }
+    .path-card, .step, .panel { max-width: 100%; }
+    .step { min-width: 0; }
+    .child-card dl { grid-template-columns: 1fr; }
+    header.top { padding: 12px; }
+    nav.tabs a { flex: 1; text-align: center; }
+  }
 </style>
 </head>
 <body>
@@ -187,6 +203,7 @@
 <div id="paths-view">
 <div class="layout">
   <aside class="panel filters">
+    <button type="button" class="jump" id="jump-to-results">К результатам ↓</button>
     <h2>Фильтры</h2>
     <div class="field">
       <label for="f-country">Страна</label>
@@ -268,6 +285,7 @@
   </aside>
 
   <main class="main-col">
+    <button type="button" class="jump" id="jump-to-form">↑ К вопросам</button>
     <section class="panel" id="best-section">
       <h2>Лучшие варианты по вашим ответам</h2>
       <div class="best-grid" id="best-grid"></div>
@@ -1207,6 +1225,8 @@
         readForm(); render();
       });
     });
+    el("jump-to-results").addEventListener("click", function () { el("best-section").scrollIntoView({ behavior: "smooth" }); });
+    el("jump-to-form").addEventListener("click", function () { document.querySelector("aside.filters").scrollIntoView({ behavior: "smooth" }); });
     el("f-reset").addEventListener("click", function () {
       state = St.decodeState("", DEFAULTS, FIELDS_BY_ID);
       writeForm(); render();
